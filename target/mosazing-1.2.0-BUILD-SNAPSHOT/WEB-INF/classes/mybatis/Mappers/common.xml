@@ -1,0 +1,1798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- mybatis -->	
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- ibatis -->
+<!-- <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd"> -->
+<!-- <configuration> -->
+<!-- 	<settings> -->
+<!-- 		<setting name="defaultExecutorType" value="BATCH"/> -->
+<!-- 	</settings> -->
+<!-- </configuration> -->
+<mapper namespace="common">
+	<select id="selectCompanyCount" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="Integer">
+		SELECT COUNT(*)
+		  FROM MSZ010TB a
+		  LEFT JOIN MSZ930TB b
+		    ON a.code = b.code
+		  LEFT JOIN MSZ999TB c
+		    ON a.code = c.code
+		 WHERE status = 'Y'
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+	</select>
+	
+	<select id="selectCompanyCountX" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="Integer">	
+		SELECT COUNT(*)
+		  FROM MSZ010TB a
+		  LEFT JOIN msz120tb x
+        	ON a.code = x.code
+		  LEFT JOIN MSZ930TB b
+		    ON a.code = b.code
+		  LEFT JOIN MSZ999TB c
+		    ON a.code = c.code
+		 WHERE status = 'Y'
+		   AND x.code IS NULL
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+	</select>
+	
+	<select id="selectCompanyCountSort" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="Integer">
+		SELECT COUNT(DISTINCT(b.code))
+          FROM msz120tb x
+          LEFT JOIN msz010tb a
+            ON x.code = a.code
+		  LEFT JOIN MSZ930TB b
+		    ON x.code = b.code
+		  LEFT JOIN MSZ999TB c
+		    ON x.code = c.code
+		 WHERE status = 'Y'
+		   AND x.account = #{account}
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+	</select>
+
+	<select id="selectCompanyList" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ010VO">
+		SELECT a.*,
+		       b.cdnm as wicsnm,
+		       c.favorite
+		  FROM MSZ010TB A
+		  LEFT JOIN MSZ920TB b
+		    ON a.wics = b.cd
+		  LEFT JOIN MSZ999TB c
+		    ON a.code = c.code
+		 WHERE status = 'Y'
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   AND currency LIKE "%KRW%"
+<!-- 		   AND wics is not null -->
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND wics like concat('%', #{wics}, '%')
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+		 ORDER BY a.CODE 
+		  <if test='length != 0'>
+		 LIMIT #{length} OFFSET #{offset}
+		  </if>
+	</select>
+	<select id="selectCompanyInfoList" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ010VO">
+		SELECT code,
+			   compnm,
+			   capital,
+			   share,
+			   wics
+		  FROM msz010tb
+		 <choose>
+			<when test="list.size > 0">
+		    	WHERE code in
+		        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+		        #{item}
+		        </foreach> 
+		  	</when>
+		 </choose>
+	</select>
+	
+	<insert id="insertFnlttSinglAcnt" parameterType="java.util.List">
+		INSERT INTO MSZ020TB(
+			code, 				
+			rcept_no, 			
+			reprt_code, 			
+			bsns_year, 			
+			sj_div, 				
+			sj_nm, 				
+			fs_div, 				
+			fs_nm,
+			account_nm, 			
+			frmtrm_nm, 			
+			frmtrm_amount, 		
+			frmtrm_dt, 	
+			thstrm_nm, 			
+			thstrm_amount, 		
+			thstrm_dt, 		
+			bfefrmtrm_nm, 	
+			bfefrmtrm_amount, 	
+			bfefrmtrm_dt, 		
+			ord,
+			reg_dt
+		)VALUES
+		<foreach collection="list" item="item" separator=" , ">
+		(
+			#{item.code},
+			#{item.rcept_no},
+			#{item.reprt_code},
+			#{item.bsns_year},
+			#{item.sj_div},
+			#{item.sj_nm},
+			#{item.fs_div},
+			#{item.fs_nm},
+			#{item.account_nm},
+			#{item.frmtrm_nm},
+			#{item.frmtrm_amount},
+			#{item.frmtrm_dt},
+			#{item.thstrm_nm},
+			#{item.thstrm_amount},
+			#{item.thstrm_dt},
+			#{item.bfefrmtrm_nm},
+			#{item.bfefrmtrm_amount},
+			#{item.bfefrmtrm_dt},
+			#{item.ord},
+			now()
+		)
+		</foreach>
+	</insert>
+	
+<!-- 	<insert id="insertFnlttSinglAcnt" parameterType="com.mo.mosazing.Model.MSZ020VO"> -->
+<!-- 		INSERT INTO MSZ020TB( -->
+<!-- 			code, 				 -->
+<!-- 			rcept_no, 			 -->
+<!-- 			reprt_code, 			 -->
+<!-- 			bsns_year, 			 -->
+<!-- 			sj_div, 				 -->
+<!-- 			sj_nm, 				 -->
+<!-- 			fs_div, 				 -->
+<!-- 			fs_nm, -->
+<!-- 			account_nm, 			 -->
+<!-- 			frmtrm_nm, 			 -->
+<!-- 			frmtrm_amount, 		 -->
+<!-- 			frmtrm_dt, 	 -->
+<!-- 			thstrm_nm, 			 -->
+<!-- 			thstrm_amount, 		 -->
+<!-- 			thstrm_dt, 		 -->
+<!-- 			bfefrmtrm_nm, 	 -->
+<!-- 			bfefrmtrm_amount, 	 -->
+<!-- 			bfefrmtrm_dt, 		 -->
+<!-- 			ord -->
+<!-- 		)VALUES( -->
+<!-- 			#{code}, -->
+<!-- 			#{rcept_no}, -->
+<!-- 			#{reprt_code}, -->
+<!-- 			#{bsns_year}, -->
+<!-- 			#{sj_div}, -->
+<!-- 			#{sj_nm}, -->
+<!-- 			#{fs_div}, -->
+<!-- 			#{fs_nm}, -->
+<!-- 			#{account_nm}, -->
+<!-- 			#{frmtrm_nm}, -->
+<!-- 			#{frmtrm_amount}, -->
+<!-- 			#{frmtrm_dt}, -->
+<!-- 			#{thstrm_nm}, -->
+<!-- 			#{thstrm_amount}, -->
+<!-- 			#{thstrm_dt}, -->
+<!-- 			#{bfefrmtrm_nm}, -->
+<!-- 			#{bfefrmtrm_amount}, -->
+<!-- 			#{bfefrmtrm_dt}, -->
+<!-- 			#{ord} -->
+<!-- 		) -->
+<!-- 	</insert> -->
+	
+<!-- 	<insert id="insertFnlttSinglAcntAll" parameterType="com.mo.mosazing.Model.MSZ030VO"> -->
+<!-- 		INSERT INTO MSZ030TB( -->
+<!-- 			code, 				 -->
+<!-- 			rcept_no, 			 -->
+<!-- 			reprt_code, 			 -->
+<!-- 			bsns_year, 			 -->
+<!-- 			sj_div, 				 -->
+<!-- 			sj_nm, 				 -->
+<!-- 			account_id, 			 -->
+<!-- 			account_nm, 			 -->
+<!-- 			account_detail, 		 -->
+<!-- 			thstrm_nm, 			 -->
+<!-- 			thstrm_amount, 		 -->
+<!-- 			thstrm_add_amount, 	 -->
+<!-- 			frmtrm_nm, 			 -->
+<!-- 			frmtrm_amount, 		 -->
+<!-- 			frmtrm_q_nm, 		 -->
+<!-- 			frmtrm_q_amount, 	 -->
+<!-- 			frmtrm_add_amount, 	 -->
+<!-- 			bfefrmtrm_nm, 		 -->
+<!-- 			bfefrmtrm_amount, 	 -->
+<!-- 			ord -->
+<!-- 		)VALUES -->
+<!-- 		( -->
+<!-- 			#{code}, -->
+<!-- 			#{rcept_no}, -->
+<!-- 			#{reprt_code}, -->
+<!-- 			#{bsns_year}, -->
+<!-- 			#{sj_div}, -->
+<!-- 			#{sj_nm}, -->
+<!-- 			#{account_id}, -->
+<!-- 			#{account_nm}, -->
+<!-- 			#{account_detail}, -->
+<!-- 			#{thstrm_nm}, -->
+<!-- 			#{thstrm_amount}, -->
+<!-- 			#{thstrm_add_amount}, -->
+<!-- 			#{frmtrm_nm}, -->
+<!-- 			#{frmtrm_amount}, -->
+<!-- 			#{frmtrm_q_nm}, -->
+<!-- 			#{frmtrm_q_amount}, -->
+<!-- 			#{frmtrm_add_amount}, -->
+<!-- 			#{bfefrmtrm_nm}, -->
+<!-- 			#{bfefrmtrm_amount}, -->
+<!-- 			#{ord} -->
+<!-- 		) -->
+<!-- 	</insert> -->
+	
+	<insert id="insertFnLog" parameterType="com.mo.mosazing.Model.MSZ040VO">
+		INSERT INTO MSZ040TB(
+			code, 				
+			bsns_year,
+			fn_cnt,
+			url,
+			status		
+		)VALUES(
+			#{code},
+			#{bsns_year},
+			#{fn_cnt},
+			#{url},
+			#{status}
+		)
+	</insert>
+	
+	<insert id="insertFnlttSinglAcntAll" parameterType="java.util.List">
+		INSERT INTO MSZ030TB(
+			code, 				
+			rcept_no, 			
+			reprt_code, 			
+			bsns_year, 			
+			sj_div, 				
+			sj_nm, 				
+			account_id, 			
+			account_nm, 			
+			account_detail, 		
+			thstrm_nm, 			
+			thstrm_amount, 		
+			thstrm_add_amount, 	
+			frmtrm_nm, 			
+			frmtrm_amount, 		
+			frmtrm_q_nm, 		
+			frmtrm_q_amount, 	
+			frmtrm_add_amount, 	
+			bfefrmtrm_nm, 		
+			bfefrmtrm_amount, 	
+			ord
+		)VALUES
+		<foreach collection="list" item="item" separator=" , ">
+		(
+			#{item.code},
+			#{item.rcept_no},
+			#{item.reprt_code},
+			#{item.bsns_year},
+			#{item.sj_div},
+			#{item.sj_nm},
+			#{item.account_id},
+			#{item.account_nm},
+			#{item.account_detail},
+			#{item.thstrm_nm},
+			#{item.thstrm_amount},
+			#{item.thstrm_add_amount},
+			#{item.frmtrm_nm},
+			#{item.frmtrm_amount},
+			#{item.frmtrm_q_nm},
+			#{item.frmtrm_q_amount},
+			#{item.frmtrm_add_amount},
+			#{item.bfefrmtrm_nm},
+			#{item.bfefrmtrm_amount},
+			#{item.ord}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id="insertExtract1" parameterType="java.util.List">
+		INSERT INTO MSZ100TB(
+			code, 				
+			rcept_no, 			
+			reprt_code, 			
+			bsns_year, 			
+			sj_div, 				
+			sj_nm, 				
+			fs_div, 				
+			fs_nm,
+			type,
+			account_nm, 			
+			frmtrm_nm, 			
+			frmtrm_amount, 		
+			frmtrm_dt, 	
+			thstrm_nm, 			
+			thstrm_amount, 		
+			thstrm_dt, 		
+			bfefrmtrm_nm, 	
+			bfefrmtrm_amount, 	
+			bfefrmtrm_dt, 		
+			ord,
+			reg_dt
+		)VALUES
+		<foreach collection="list" item="item" separator=" , ">
+		(
+			#{item.code},
+			#{item.rcept_no},
+			#{item.reprt_code},
+			#{item.bsns_year},
+			#{item.sj_div},
+			#{item.sj_nm},
+			#{item.fs_div},
+			#{item.fs_nm},
+			#{item.type},
+			#{item.account_nm},
+			#{item.frmtrm_nm},
+			#{item.frmtrm_amount},
+			#{item.frmtrm_dt},
+			#{item.thstrm_nm},
+			#{item.thstrm_amount},
+			#{item.thstrm_dt},
+			#{item.bfefrmtrm_nm},
+			#{item.bfefrmtrm_amount},
+			#{item.bfefrmtrm_dt},
+			#{item.ord},
+			now()
+		)
+		</foreach>
+	</insert>
+	
+	<insert id="insertNullItems" parameterType="java.util.List">
+		INSERT INTO MSZ999TB(
+			code,
+			step,
+			exclude,				
+			reg_dt
+		)VALUES
+		<foreach collection="list" item="item" separator=" , ">
+		(
+			#{item.code},
+			#{item.step},
+			#{item.exclude},
+			now()
+		)
+		</foreach>
+	</insert>
+	
+	<insert id="insertExtract2" parameterType="java.util.List">
+		INSERT INTO MSZ200TB(
+			code, 				
+			rcept_no, 			
+			reprt_code, 			
+			bsns_year, 			
+			sj_div, 				
+			sj_nm, 				
+			type,
+			account_id,
+			account_nm,
+			account_detail, 			
+			frmtrm_nm, 			
+			frmtrm_amount, 		
+			thstrm_nm, 			
+			thstrm_amount, 		
+			bfefrmtrm_nm, 	
+			bfefrmtrm_amount, 	
+			ord,
+			reg_dt
+		)VALUES
+		<foreach collection="list" item="item" separator=" , ">
+		(
+			#{item.code},
+			#{item.rcept_no},
+			#{item.reprt_code},
+			#{item.bsns_year},
+			#{item.sj_div},
+			#{item.sj_nm},
+			#{item.type},
+			#{item.account_id},
+			#{item.account_nm},
+			#{item.account_detail},
+			#{item.frmtrm_nm},
+			#{item.frmtrm_amount},
+			#{item.thstrm_nm},
+			#{item.thstrm_amount},
+			#{item.bfefrmtrm_nm},
+			#{item.bfefrmtrm_amount},
+			#{item.ord},
+			now()
+		)
+		</foreach>
+	</insert>
+	<insert id="insertDaySise" parameterType="java.util.List">
+		INSERT INTO MSZ300TB(
+			code,
+			date,        
+			endvalue,        
+			startvalue,        
+			highvalue,        
+			lowvalue,        
+			volume,     
+			fluctuation,     
+			reg_dt 
+		)VALUES
+		<foreach collection="list" item="item" separator=" , ">
+		(
+			#{item.code},
+			#{item.date},
+			#{item.endvalue},
+			#{item.startvalue},
+			#{item.highvalue},
+			#{item.lowvalue},
+			#{item.volume},
+			#{item.fluctuation},
+			now()
+		)
+		</foreach>
+	</insert>
+	<update id="updateDaySise" parameterType="com.mo.mosazing.Model.MSZ300VO">
+		UPDATE MSZ300TB
+		   SET endvalue = #{endvalue},
+		   	   startvalue = #{startvalue},
+		   	   highvalue = #{highvalue},
+		   	   lowvalue = #{lowvalue},
+		   	   volume = #{volume},
+		   	   fluctuation = #{fluctuation},
+		   	   upt_dt = now()
+		 WHERE code = #{code}
+		   AND date = #{date}
+	</update>
+	
+<!-- 	<select id="selectListPlusCount" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="Integer"> -->
+<!-- 		SELECT COUNT(DISTINCT(CODE)) -->
+<!-- 		  FROM msz100tb -->
+<!-- 		 WHERE TYPE IN ('PA', 'PD') -->
+<!-- 		 ORDER BY CODE -->
+<!-- 	</select> -->
+<!-- <select id="selectListPlusCode" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String"> -->
+<!-- 		SELECT distinct(code) as code -->
+<!-- 		  FROM msz100tb -->
+<!-- 		 WHERE type IN ('PA', 'PD') -->
+<!-- 		 ORDER BY code -->
+<!-- 		 LIMIT #{length} OFFSET #{offset} -->
+<!-- 	</select> -->
+<!-- <select id="selectListPlus" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ020VO"> -->
+<!-- 		SELECT b.code, -->
+<!-- 		       b.compnm, -->
+<!-- 		       a.thstrm_amount,  -->
+<!-- 			   a.frmtrm_amount,  -->
+<!-- 			   a.bfefrmtrm_amount, -->
+<!-- 			   a.type, -->
+<!-- 			   a.account_nm, -->
+<!-- 			   a.sj_div,  -->
+<!-- 			   a.fs_div -->
+<!-- 		  FROM ( SELECT code, thstrm_amount, frmtrm_amount, bfefrmtrm_amount, type, account_nm, sj_div, fs_div  -->
+<!-- 		  		   from msz100tb -->
+<!-- 		  		  <choose> -->
+<!-- 					<when test="list.size > 0"> -->
+<!-- 				    	WHERE code in -->
+<!-- 				        <foreach collection="list" item="item" index="index" separator="," open="(" close=")"> -->
+<!-- 				        #{item} -->
+<!-- 				        </foreach>  -->
+<!-- 				  	</when> -->
+<!-- 				</choose> -->
+<!-- 		  	 ) a -->
+<!-- 		  LEFT JOIN msz010tb b -->
+<!-- 		    ON a.code = b.code -->
+<!-- 		 WHERE a.type IN ('PA', 'PD') -->
+<!-- 		 ORDER BY a.code, a.account_nm  -->
+<!-- 		 LIMIT #{length} OFFSET #{offset} 주석 -->
+<!-- 	</select> -->
+
+<!-- 2020.10.28 수정 -->
+	<select id="selectListPlusCount" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="Integer">
+		SELECT COUNT(*)
+		  FROM msz010tb a
+		  LEFT JOIN msz900tb b
+		    ON a.code = b.code
+		  LEFT JOIN msz930tb c
+		    ON a.code = c.code
+		  LEFT JOIN msz999tb d
+		    ON a.code = d.code
+		 WHERE status = 'Y'
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   AND currency LIKE "%KRW%"
+<!-- 		   AND wics is not null -->
+		   AND sa3plus = 3
+		   AND bp3plus = 3
+		   AND ci3plus = 3
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND a.wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+	</select>
+
+<!-- 2020.10.28 수정 -->	
+	<select id="selectListPlusCode" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT a.code as code
+		  FROM msz010tb a
+		  LEFT JOIN msz900tb b
+		    ON a.code = b.code
+		  LEFT JOIN msz930tb c
+		    ON a.code = c.code
+		  LEFT JOIN msz999tb d
+		    ON a.code = d.code
+		 WHERE status = 'Y'
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   AND currency LIKE "%KRW%"
+<!-- 		   AND wics is not null -->
+		   AND sa3plus = 3
+		   AND bp3plus = 3
+		   AND ci3plus = 3
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND a.wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+		 ORDER BY a.code
+		 LIMIT #{length} OFFSET #{offset}
+	</select>
+	<select id="selectListPlus" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ120VO">
+		SELECT a.account,
+			   a.account_nm,
+			   a.ORD,
+			   a.y3,
+			   a.y2,
+			   a.y1,
+<!-- 			   a.y0, -->
+			   b.code,
+		       b.compnm,
+		       b.division,
+		       b.share,
+		       c.*,
+		       IF(a.y1 > 0, ((c.marketcap * a.y1 * 100000000 / c.sasum) / b.share), 0) AS expectedsa,
+		       IF(a.y1 > 0, ((c.marketcap * a.y1 * 100000000 / c.bpsum) / b.share), 0) AS expectedbp,
+		       IF(a.y1 > 0, ((c.marketcap * a.y1 * 100000000 / c.cisum) / b.share), 0) AS expectedci,
+		       IF(a.y1 > 0, (a.y1 * 1000000000 / b.share), 0) AS expectedval,
+		       d.cdnm,
+		       e.favorite,
+		       g.cnt
+		  FROM msz010tb b
+		  LEFT JOIN ( SELECT CODE,
+							 account,
+							 account_nm,
+							 ORD,
+       						 SUM(CASE WHEN (yyyymm like CONCAT(CAST(#{bsns_year} AS UNSIGNED) - 2, '%')) THEN amount ELSE 0 END) AS 'y3',
+       						 SUM(CASE WHEN (yyyymm like CONCAT(CAST(#{bsns_year} AS UNSIGNED) - 1, '%')) THEN amount ELSE 0 END) AS 'y2',
+       						 SUM(CASE WHEN (yyyymm like CONCAT(CAST(#{bsns_year} AS UNSIGNED), '%')) THEN amount ELSE 0 END) AS 'y1'
+<!--        						 SUM(CASE WHEN (yyyymm like CONCAT(CAST(#{bsns_year} AS UNSIGNED) + 1, '%')) THEN amount ELSE 0 END) AS 'y0' -->
+  				   		FROM msz120tb 
+			  		  <choose>
+						<when test="list.size > 0">
+					    	WHERE code in
+					        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+					        #{item}
+					        </foreach> 
+					  	</when>
+					 </choose>
+				  	   GROUP BY CODE, account
+		  	 	) a
+		    ON b.code = a.code
+		  LEFT JOIN msz800tb c
+		    ON b.wics = c.wics
+		  LEFT JOIN msz920tb d
+		    ON b.wics = d.cd
+		  LEFT JOIN msz999tb e
+		    ON b.code = e.code
+		  LEFT JOIN ( SELECT CODE, COUNT(CODE) as cnt
+  					    FROM ( SELECT CODE, account
+	   							 FROM msz120tb 
+	  							<choose>
+									<when test="list.size > 0">
+								    	WHERE code in
+								        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+								        #{item}
+								        </foreach> 
+								  	</when>
+								 </choose>
+	  							GROUP BY CODE, account ) xx 
+ 					   GROUP BY CODE ) g
+ 		    ON b.code = g.code
+		  <choose>
+			<when test="list.size > 0">
+		    	WHERE b.code in
+		        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+		        #{item}
+		        </foreach> 
+		  	</when>
+		 </choose>
+		 ORDER BY 
+		 <choose>
+			<when test="list.size > 0">
+				FIELD(b.code,
+				<foreach collection="list" item="item" index="index" separator=",">
+		        #{item}
+		        </foreach>
+		        ), 
+<!-- 		        <foreach collection="list" item="item" index="index" separator=","> -->
+<!-- 		        FIND_IN_SET(#{item}, a.code) -->
+<!-- 		        </foreach>  -->
+		  	</when>
+		 </choose>
+		 a.ord
+		 
+<!-- 		 <foreach collection="list" item="item" separator="," open="'" close="'"> -->
+<!--         	#{item} -->
+<!--          </foreach> -->
+	</select>
+	
+<!-- 	2021.01.29 수정 종목별 yyyymm 사용하여 갱신 -->
+	<select id="selectItemList" parameterType="com.mo.mosazing.Model.YYYYMMVO" resultType="com.mo.mosazing.Model.MSZ120VO">
+		SELECT b.account,
+			   b.account_nm,
+			   b.ORD,
+			   b.y3,
+			   b.y2,
+			   b.y1,
+<!-- 			   a.y0, -->
+			   a.code,
+		       a.compnm,
+		       a.division,
+		       a.share,
+		       c.*,
+		       IF(b.y1 > 0, ((c.marketcap * b.y1 * 100000000 / c.sasum) / a.share), 0) AS expectedsa,
+		       IF(b.y1 > 0, ((c.marketcap * b.y1 * 100000000 / c.bpsum) / a.share), 0) AS expectedbp,
+		       IF(b.y1 > 0, ((c.marketcap * b.y1 * 100000000 / c.cisum) / a.share), 0) AS expectedci,
+		       IF(b.y1 > 0, (b.y1 * 1000000000 / a.share), 0) AS expectedval,
+		       d.cdnm,
+		       e.favorite,
+		       g.cnt
+		  FROM msz010tb a
+		  LEFT JOIN ( SELECT CODE,
+							 account,
+							 account_nm,
+							 ORD,
+       						 SUM(CASE WHEN (yyyymm = #{y3}) THEN amount ELSE 0 END) AS 'y3',
+       						 SUM(CASE WHEN (yyyymm = #{y2}) THEN amount ELSE 0 END) AS 'y2',
+       						 SUM(CASE WHEN (yyyymm = #{y1}) THEN amount ELSE 0 END) AS 'y1'
+<!--        						 SUM(CASE WHEN (yyyymm like CONCAT(CAST(#{bsns_year} AS UNSIGNED) + 1, '%')) THEN amount ELSE 0 END) AS 'y0' -->
+  				   		FROM msz120tb 
+				       WHERE code = #{code}
+				  	   GROUP BY CODE, account
+		  	 	) b
+		    ON a.code = b.code
+		  LEFT JOIN msz800tb c
+		    ON a.wics = c.wics
+		  LEFT JOIN msz920tb d
+		    ON a.wics = d.cd
+		  LEFT JOIN msz999tb e
+		    ON a.code = e.code
+		  LEFT JOIN ( SELECT CODE, COUNT(CODE) as cnt
+  					    FROM ( SELECT CODE, account
+	   							 FROM msz120tb 
+	  							WHERE code = #{code}
+	  							GROUP BY CODE, account ) xx 
+ 					   GROUP BY CODE ) g
+ 		    ON a.code = g.code
+		 WHERE a.code = #{code}
+		 ORDER BY b.ord
+	</select>
+	
+	<select id="selectSellPrice" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ800VO">
+		SELECT a.code,
+			   a.wics,
+			   b.*
+		  FROM msz010tb a
+		  LEFT JOIN msz800tb b
+		    ON a.wics = b.wics 
+  		  <choose>
+			<when test="list.size > 0">
+		    	WHERE code in
+		        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+		        #{item}
+		        </foreach> 
+		  	</when>
+		 </choose>
+		 ORDER BY a.code, a.wics 
+	</select>
+
+	<select id="selectListMaxDate" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ300VO">
+		SELECT CODE, MAX(DATE) as date FROM msz300tb 
+		<choose>
+			<when test="list.size > 0">
+		    	WHERE code in
+		        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+		        	#{item}
+		        </foreach> 
+		  	</when>
+		</choose>
+		 GROUP BY CODE
+		 ORDER BY CODE
+	</select>
+	
+	<select id="selectListNoBondCount" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="Integer">
+		SELECT COUNT(*)
+		  FROM (
+				SELECT CODE
+				  FROM msz100tb
+				 WHERE TYPE IN ('PA', 'PD')
+				 GROUP BY CODE
+			 ) a
+		  LEFT JOIN ( SELECT CODE, COUNT(*) AS cnt
+		                FROM msz200tb
+		               GROUP BY CODE
+		           ) b
+		    ON a.code = b.code
+		 WHERE b.cnt IS NULL
+	</select>
+	<select id="selectListNoBond" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT a.code
+		  FROM (
+				SELECT CODE
+				  FROM msz100tb
+				 WHERE TYPE IN ('PA', 'PD')
+				 GROUP BY CODE
+			 ) a
+		  LEFT JOIN ( SELECT CODE, COUNT(*) AS cnt
+		                FROM msz200tb
+		               GROUP BY CODE
+		           ) b
+		    ON a.code = b.code
+		 WHERE b.cnt IS NULL
+		 ORDER BY a.code
+		 LIMIT #{length} OFFSET #{offset}
+	</select>
+	<select id="selectListNoBondInfo" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ020VO">
+		SELECT b.code,
+		       b.compnm,
+		       a.thstrm_amount, 
+			   a.frmtrm_amount, 
+			   a.bfefrmtrm_amount,
+			   a.type,
+			   a.account_nm,
+			   a.sj_div, 
+			   a.fs_div
+		  FROM ( select code, thstrm_amount, frmtrm_amount, bfefrmtrm_amount, type, account_nm, sj_div, fs_div
+		           from msz100tb 
+		          <choose>
+					<when test="list.size > 0">
+				    	WHERE code in
+				        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+				        #{item}
+				        </foreach> 
+				  	</when>
+				</choose>   
+		      ) a
+		  LEFT JOIN msz010tb b
+		    ON a.code = b.code
+		 WHERE a.type IN ('PA', 'PD')
+		 ORDER BY a.code, a.account_nm
+	</select>
+	
+	
+	
+	<select id="selectListPlusCFS" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ020VO">
+		SELECT a.code, 
+			   a.account_nm, 
+			   a.thstrm_amount, 
+			   a.frmtrm_amount, 
+			   a.bfefrmtrm_amount, 
+			   a.sj_div, 
+			   a.fs_div,
+			   b.compnm,
+			   c.cnt
+		  FROM ( SELECT code, account_nm, thstrm_amount, frmtrm_amount, bfefrmtrm_amount, sj_div, fs_div from msz200tb
+		  		  WHERE thstrm_amount > 0 
+		   			AND frmtrm_amount > 0 
+		   			AND bfefrmtrm_amount > 0
+		  	   ) a
+		  LEFT JOIN ( SELECT code, compnm FROM msz010tb ) b
+		    ON a.code = b.code
+		  LEFT JOIN ( SELECT code, COUNT(CODE) as cnt from msz200tb
+		  			   where thstrm_amount > 0 
+		   				 AND frmtrm_amount > 0 
+		   			     AND bfefrmtrm_amount > 0 
+		  			   group by code
+		            ) c
+		    ON a.code = c.code
+		 order by a.code
+	</select>
+	
+	<select id="selectListPlusOFSIS" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ020VO">
+		SELECT a.code, 
+			   a.account_nm, 
+			   a.thstrm_amount, 
+			   a.frmtrm_amount, 
+			   a.bfefrmtrm_amount, 
+			   a.sj_div, 
+			   a.fs_div,
+			   b.compnm,
+			   c.cnt
+		  FROM ( SELECT code, account_nm, thstrm_amount, frmtrm_amount, bfefrmtrm_amount, sj_div, fs_div from msz210tb
+		  		  WHERE thstrm_amount > 0 
+		   			AND frmtrm_amount > 0 
+		   			AND bfefrmtrm_amount > 0
+		  	   ) a
+		  LEFT JOIN ( SELECT code, compnm FROM msz010tb ) b
+		    ON a.code = b.code
+		  LEFT JOIN ( SELECT code, COUNT(CODE) as cnt from msz210tb
+		  			   where thstrm_amount > 0 
+		   				 AND frmtrm_amount > 0 
+		   			     AND bfefrmtrm_amount > 0 
+		  			   group by code
+		            ) c
+		    ON a.code = c.code
+		 order by a.code
+	</select>
+	
+<!-- 	<select id="selectNoBond" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ020VO"> -->
+<!-- 		SELECT a.code,  -->
+<!-- 			   a.compnm,  -->
+<!-- 			   b.account_nm,  -->
+<!-- 			   b.thstrm_amount,  -->
+<!-- 			   b.sj_div,  -->
+<!-- 			   c.cnt -->
+<!-- 	      from ( SELECT code, compnm from msz010tb -->
+<!-- 	              <choose> -->
+<!-- 				 	<when test="list.size > 0"> -->
+<!-- 				         WHERE code in -->
+<!-- 				         <foreach collection="list" item="item" index="index" separator="," open="(" close=")"> -->
+<!-- 				         #{item} -->
+<!-- 				         </foreach>  -->
+<!-- 				  	</when> -->
+<!-- 				  </choose> -->
+<!-- 			  ) a -->
+<!-- 	       LEFT JOIN ( SELECT code, account_id, account_nm, sj_div, thstrm_amount -->
+<!-- 	               		 FROM msz030tb -->
+<!-- 	              		WHERE sj_div = 'BS' -->
+<!-- 	                      and account_nm LIKE '%사채%' -->
+<!--        				      AND account_id != '-표준계정코드 미사용-' -->
+<!--        				      AND thstrm_amount != 0  -->
+<!-- 	              	) b -->
+<!-- 	         on a.code = b.code -->
+<!-- 	       LEFT JOIN ( SELECT code, COUNT(code) as cnt from msz030tb -->
+<!-- 	                    WHERE sj_div = 'BS' -->
+<!-- 	                      and account_nm LIKE '%사채%' -->
+<!--        				      AND account_id != '-표준계정코드 미사용-' -->
+<!--        				      AND thstrm_amount != 0 -->
+<!--        				    group by code -->
+<!--        				) c -->
+<!--        		 on a.code = c.code -->
+<!--        	  ORDER BY a.code -->
+<!-- 	</select> -->
+	
+	<select id="selectNoBond" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ020VO">
+		SELECT a.code, 
+			   a.compnm, 
+			   b.account_nm,
+			   b.account_id,  
+			   b.thstrm_amount, 
+			   b.sj_div
+	      from ( SELECT code, compnm from msz010tb
+	              <choose>
+				 	<when test="list.size > 0">
+				         WHERE code in
+				         <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+				         #{item}
+				         </foreach> 
+				  	</when>
+				  </choose>
+			  ) a
+	       LEFT JOIN ( SELECT code, account_id, account_nm, sj_div, thstrm_amount
+	               		 FROM msz030tb
+	              		WHERE ( account_nm LIKE '%사채%' OR account_id LIKE '%bond%' )
+       				      AND thstrm_amount != 0 
+	              	) b
+	         on a.code = b.code
+	       LEFT JOIN ( SELECT code, COUNT(code) as cnt from msz030tb
+	                    WHERE ( account_nm LIKE '%사채%' OR account_id LIKE '%bond%' )
+       				      AND thstrm_amount != 0
+       				    group by code
+       				) c
+       		 on a.code = c.code
+       	  ORDER BY a.code
+	</select>
+	
+	<select id="selectBond" parameterType="java.util.List" resultType="com.mo.mosazing.Model.MSZ030VO">
+		SELECT *
+	      FROM msz030tb 
+	     WHERE ( account_nm LIKE '%사채%' OR account_id LIKE '%bond%' )
+       	   AND thstrm_amount != 0
+		<choose>
+			<when test="list.size > 0">
+		    	AND code in
+		        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+		        #{item}
+		        </foreach> 
+		  	</when>
+		</choose>
+       	 ORDER BY code
+	</select>
+	
+	<select id="select020TBYear" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="int">
+		SELECT COUNT(*) FROM msz020tb
+		 WHERE bsns_year = #{bsns_year}
+	</select>
+	
+	<select id="selectCountCFSYear" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="int">
+		SELECT COUNT(*) FROM msz100tb
+		 WHERE bsns_year = #{bsns_year}
+	</select>
+	
+	<select id="deleteCFSYear" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		DELETE FROM msz100tb
+		 WHERE bsns_year = #{bsns_year}
+	</select>
+	
+<!-- 	종목별 연결재무제표 기준. 매출액, 영업이익, 당기순이익 가져오는 부분.  -->
+	<select id="selectListCFS" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ020VO">
+		SELECT a.code, 
+			   a.compnm, 
+			   b.account_nm, 
+			   b.thstrm_amount, 
+			   b.frmtrm_amount, 
+			   b.bfefrmtrm_amount, 
+			   b.sj_div, 
+			   b.fs_div,
+			   b.rcept_no,
+			   b.bsns_year,
+			   b.reprt_code,
+			   c.cnt
+		  FROM msz010tb a
+		  LEFT JOIN ( SELECT CODE, account_nm, thstrm_amount, frmtrm_amount, bfefrmtrm_amount, sj_div, fs_div, rcept_no, bsns_year, reprt_code
+				        FROM msz020tb 
+				       WHERE fs_div = 'CFS'
+					     AND account_nm IN ('매출액', '영업이익', '당기순이익')
+					     AND bsns_year = #{bsns_year}
+				  ) b
+			ON a.code = b.code
+		  LEFT JOIN ( SELECT CODE, COUNT(CODE) AS cnt
+				        FROM msz020tb 
+				       WHERE fs_div = 'CFS'
+					     AND account_nm IN ('매출액', '영업이익', '당기순이익')
+					     AND (thstrm_amount > 0 AND frmtrm_amount > 0 AND bfefrmtrm_amount > 0)
+					     AND bsns_year = #{bsns_year}
+				       GROUP BY CODE
+				  ) c
+			ON a.code = c.code
+		 ORDER BY a.code
+	</select>
+	
+	<select id="selectListOFSIS" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ020VO">
+		SELECT a.code, 
+			   a.compnm, 
+			   b.account_nm, 
+			   b.thstrm_amount, 
+			   b.frmtrm_amount, 
+			   b.bfefrmtrm_amount, 
+			   b.sj_div, 
+			   b.fs_div,
+			   b.rcept_no,
+			   b.bsns_year,
+			   b.reprt_code,
+			   c.cnt
+		  FROM ( SELECT code, compnm FROM msz010tb
+		  <choose>
+		  	<when test="list.size > 0">
+	          WHERE code IN
+	          <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+	          #{item}
+	          </foreach> 
+		  	</when>
+		  </choose> 
+		       ) a
+		  LEFT JOIN ( SELECT CODE, account_nm, thstrm_amount, frmtrm_amount, bfefrmtrm_amount, sj_div, fs_div, rcept_no, bsns_year, reprt_code
+		       		    FROM msz020tb 
+		      		   WHERE fs_div = 'OFS'
+		        		 AND sj_div = 'IS'
+		       			 AND account_nm IN ('매출액', '영업이익', '당기순이익')
+		       			 AND bsns_year = #{bsns_year}
+				    ) b
+		    ON a.code = b.code
+		  LEFT JOIN ( SELECT CODE, COUNT(code) as cnt
+		       		    FROM msz020tb 
+		      		   WHERE fs_div = 'OFS'
+		        		 AND sj_div = 'IS'
+		       			 AND account_nm IN ('매출액', '영업이익', '당기순이익')
+		       			 AND (thstrm_amount > 0 AND frmtrm_amount > 0 AND bfefrmtrm_amount > 0)
+		       			 AND bsns_year = #{bsns_year}
+				    ) c
+	   		ON a.code = c.code
+	   	 ORDER BY a.code
+	</select>
+	
+	<insert id="updateVolumeByCode" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		CALL pdVolumeProfile(#{code}, #{volumeType})
+	</insert>
+<!-- 	2020.12.07 추가 -->
+	<insert id="updateVolumeByCodeR2" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		CALL pdVolumeProfileR2(
+        <foreach collection="list" item="item" index="index" separator=",'|'," open="CONCAT(" close=")">
+        #{item}
+        </foreach> 
+		, #{volumeType})
+	</insert>
+	<update id="updateFinancialStatus" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		CALL pdGet3yStatus()
+	</update>
+	<select id="selectVolumeMaxBycode" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ400VO">
+		CALL pdGetMaxVolume(
+        <foreach collection="list" item="item" index="index" separator=",'|'," open="CONCAT(" close=")">
+        #{item}
+        </foreach> 
+		, #{volumeType})
+	</select>
+	<select id="selectVolumeByCode" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ400VO">
+		SELECT code,
+			   type,
+			   date,
+			   IF(ISNULL(volume), 0, volume) AS volume,
+	       	   IF(ISNULL(f), 0, f) AS f,
+	       	   IF(ISNULL(t), 0, t) AS t
+		 FROM msz400tb
+ 		 WHERE TYPE = #{volumeType}
+ 		 <choose>
+		 	<when test="list.size > 0">
+	          AND code IN
+	          <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+	          #{item}
+	          </foreach> 
+		  	</when>
+		 </choose>
+ 	     ORDER BY CODE, idx
+	</select>
+	
+<!-- 	<insert id="updateStockInfoByNaver" parameterType="com.mo.mosazing.Model.MSZ120VO"> -->
+<!-- 		 INSERT INTO msz120tb( -->
+<!-- 		 	CODE,  -->
+<!-- 		 	yyyymm,  -->
+<!-- 		 	account,  -->
+<!-- 		 	account_nm,  -->
+<!-- 		 	amount, -->
+<!-- 		 	ord, -->
+<!-- 		 	reg_dt -->
+<!-- 		 )VALUES( -->
+<!-- 		 	#{code},  -->
+<!-- 		 	#{yyyymm},  -->
+<!-- 		 	#{account},  -->
+<!-- 		 	#{account_nm},  -->
+<!-- 		 	#{amount},  -->
+<!-- 		 	#{ord}, -->
+<!-- 		 	NOW() -->
+<!-- 		 ) ON DUPLICATE KEY UPDATE -->
+<!-- 			amount = #{amount}, -->
+<!-- 			upt_dt = NOW() -->
+<!-- 	</insert> -->
+	<insert id="updateStockInfoByNaver" parameterType="java.util.List">
+		 INSERT INTO msz120tb(
+		 	CODE, 
+		 	yyyymm, 
+		 	account, 
+		 	account_nm, 
+		 	amount,
+		 	ord,
+		 	reg_dt
+		 )VALUES
+		 <foreach collection="list" item="item" separator=" , ">
+		 (
+			#{item.code},
+			#{item.yyyymm},
+			#{item.account},
+			#{item.account_nm},
+			#{item.amount},
+			#{item.ord},
+			now()
+		 )
+		 </foreach>
+	</insert>
+	<update id="updateStockMainInfo" parameterType="com.mo.mosazing.Model.MSZ010VO">
+		UPDATE MSZ010TB
+		   SET status = #{status}
+		 WHERE code = #{code}
+	</update>
+	<delete id="deleteStockInfoByNaver" parameterType="com.mo.mosazing.Model.MSZ120VO">
+	DELETE FROM MSZ120TB
+	 WHERE yyyymm > SUBSTRING(#{yyyymm}, 1, 4)
+	   AND code = #{code}
+<!-- WHERE yyyymm > (#{yyyymm} - 3) -->
+<!-- 	 <if test="code != null or wics != null"> -->
+<!-- 	   AND code in  -->
+<!-- 	   <foreach collection="list" item="item" index="index" separator="," open="(" close=")"> -->
+<!--        #{item} -->
+<!--        </foreach> -->
+<!--      </if> -->
+	</delete>
+	<select id="selectWICSList" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ920VO">
+	SELECT * FROM msz920tb WHERE CDTYPE = #{cdtype} and cdlevel = #{cdlevel}
+	</select>
+	<update id="updateWICSInfo" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		<choose>
+			<when test="list.size > 0">
+			UPDATE MSZ010TB
+		   	   SET wics = #{wics}
+		     WHERE code in
+				<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+		        #{item}
+		       	</foreach> 
+		  	</when>
+		 </choose>
+	</update>
+	<update id="updateWICSInfoUndivide" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		UPDATE MSZ010TB
+	   	   SET wics = #{wics}
+	     WHERE wics is null
+	</update>
+	<select id="selectListCodeByWICS" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT distinct(a.code) as code
+		  FROM msz010tb a
+		  LEFT JOIN msz900tb b
+		    ON a.code = b.code
+		  LEFT JOIN msz999tb c
+		    ON a.code = c.code
+		 WHERE status = 'Y' 
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   AND currency LIKE "%KRW%"
+		   AND (exclude IS NULL OR exclude != 1)
+		   AND wics = #{wics}
+		 ORDER BY code
+	</select>
+	<select id="selectSumListByWICS" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ800VO">
+	
+		SELECT x1.account as account, 
+		       SUM(x1.amount) AS SUM,
+		       MAX(x1.amount) AS MAX,
+		       MIN(x1.amount) AS MIN
+		  FROM msz120tb x1
+		  LEFT JOIN msz120tb y1
+		    ON x1.code = y1.code
+  <![CDATA[AND x1.yyyymm < y1.yyyymm]]>
+		 WHERE y1.code IS NULL
+ 	       and x1.code in
+ 	       <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+	       #{item}
+	       </foreach>
+	       and x1.amount > 0
+ 		 GROUP BY x1.account
+ 	
+	</select>
+	<!-- 2020.10.28 수정. 사용안함. -->	
+	<select id="selectListWICSCode" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT distinct(a.wics) as wics
+		  FROM msz010tb a
+		  LEFT JOIN msz900tb b
+		    ON a.code = b.code
+		 WHERE currency LIKE "%KRW%"
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if> 
+<!-- 		   AND wics is not null -->
+		   AND sa3plus = 3
+		   AND bp3plus = 3
+		   AND ci3plus = 3
+		 ORDER BY code
+		 LIMIT #{length} OFFSET #{offset}
+	</select>
+	<insert id="insertSumByWICS" parameterType="com.mo.mosazing.Model.MSZ800VO">
+		INSERT INTO msz800tb(
+			wics,
+			sasum,
+			bpsum,
+			cisum,
+			samax,
+			samin,
+			bpmax,
+			bpmin,
+			cimax,
+			cimin,
+			reg_dt
+		 )VALUES(
+		 	#{wics}, 
+		 	#{sasum}, 
+		 	#{bpsum}, 
+		 	#{cisum}, 
+		 	#{samax},
+		 	#{samin},
+		 	#{bpmax},
+		 	#{bpmin},
+		 	#{cimax},
+		 	#{cimin},
+		 	NOW()
+		 ) ON DUPLICATE KEY UPDATE
+			sasum = #{sasum},
+			bpsum = #{bpsum},
+			cisum = #{cisum},
+			samax = #{samax},
+			samin = #{samin},
+			bpmax = #{bpmax},
+			bpmin = #{bpmin},
+			cimax = #{cimax},
+			cimin = #{cimin},
+			upt_dt = NOW()
+	</insert>
+	<update id="updateMarketCap" parameterType="com.mo.mosazing.Model.MSZ800VO">
+		UPDATE MSZ800TB
+		   SET marketcap = #{marketcap},
+		   	   cap_dt = NOW()
+		 WHERE wics = #{wics}
+	</update>
+	
+	<!-- 2020.11.13 추가 -->
+	<select id="selectListCompanyCode" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT distinct(a.code) as code
+		  FROM msz010tb a
+		  LEFT JOIN MSZ930TB b
+		    ON a.code = b.code
+		  LEFT JOIN MSZ999TB c
+		    ON a.code = c.code  
+		 WHERE status = 'Y'
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if> 
+		   AND currency LIKE "%KRW%"
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+		 ORDER BY a.code
+		 <if test='length != 0'>
+		 LIMIT #{length} OFFSET #{offset}
+		 </if>
+	</select>
+	
+	<select id="selectListCompanyCodeX" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT distinct(a.code) as code
+		  FROM msz010tb a
+		  LEFT JOIN MSZ120TB x
+		    ON a.code = x.code
+		  LEFT JOIN MSZ930TB b
+		    ON a.code = b.code
+		  LEFT JOIN MSZ999TB c
+		    ON a.code = c.code  
+		 WHERE status = 'Y'
+		   AND x.code IS NULL
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if> 
+		   AND currency LIKE "%KRW%"
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+		 ORDER BY a.code
+		 <if test='length != 0'>
+		 LIMIT #{length} OFFSET #{offset}
+		 </if>
+	</select>
+	
+	<!-- 2020.11.17 추가 -->
+	<select id="selectListCompanyCodeSort" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT x1.code
+		  FROM msz120tb x1
+		 INNER JOIN (SELECT CODE, MAX(yyyymm) yyyymm
+					   FROM msz120tb
+				      WHERE account = #{account}
+					  GROUP BY CODE
+				) y1
+		    ON x1.code = y1.code
+		   AND x1.yyyymm = y1.yyyymm
+		  LEFT JOIN MSZ010tb a
+		    on x1.code = a.code
+		  LEFT JOIN MSZ930TB c
+		    ON x1.code = c.code
+		  LEFT JOIN MSZ999TB d
+		    ON x1.code = d.code
+		 WHERE account = #{account}
+		   AND a.status = 'Y'
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND a.wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+		   <choose>
+		   	<when test='sort.equals("D")'>
+		   		ORDER BY x1.amount DESC, x1.code
+		   	</when>
+		   	<otherwise>
+		   		ORDER BY x1.amount ASC, x1.code
+		   	</otherwise>
+		   </choose>
+		 <if test='length != 0'>
+		 LIMIT #{length} OFFSET #{offset}
+		 </if>
+	</select>
+	<!-- 2020.11.19 추가 -->
+	<select id="selectListPlusCodeOrderBy" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="String">
+		SELECT x1.code
+		  FROM msz120tb x1
+		 INNER JOIN (SELECT CODE, MAX(yyyymm) yyyymm
+					   FROM msz120tb
+				      WHERE account = #{account}
+					  GROUP BY CODE
+				) y1
+		    ON x1.code = y1.code
+		   AND x1.yyyymm = y1.yyyymm
+		  LEFT JOIN MSZ010tb a
+		    ON x1.code = a.code
+		  LEFT JOIN msz900tb c
+		    ON a.code = c.code
+		  LEFT JOIN msz930tb d
+		    ON a.code = d.code
+		  LEFT JOIN msz999tb e
+		    ON a.code = e.code
+		 WHERE a.status = 'Y'
+		   AND account = #{account}
+		   <if test='division != null and !division.equals("")'>
+		   and division = #{division}
+		   </if>
+		   AND c.sa3plus = 3
+		   AND c.bp3plus = 3
+		   AND c.ci3plus = 3
+		   <if test='code != null and !code.equals("")'>
+		   AND a.code like concat('%', #{code}, '%')
+		   </if>
+		   <if test='wics != null and !wics.equals("")'>
+		   AND a.wics like concat('%', #{wics}, '%')
+		   </if>
+		   <if test='checkA != null and !checkA.equals("")'>
+		   AND vstatus like "A%"
+		   </if>
+		   <if test='checkB != null and !checkB.equals("")'>
+		   AND vstatus like "%B%"
+		   </if>
+		   <if test='checkC != null and !checkC.equals("")'>
+		   AND vstatus like "%C%"
+		   </if>
+		   <if test='checkD != null and !checkD.equals("")'>
+		   AND vstatus like "%D"
+		   </if>
+		   <choose>
+		   	<when test='exclude != null and exclude.equals("on")'>
+		   	AND exclude = 1
+		   	</when>
+		   	<otherwise>
+		   	AND (exclude IS NULL OR exclude != 1)
+		   	</otherwise>
+		   </choose>
+		   <if test='favorite != null and favorite.equals("on")'>
+		   AND favorite = 1
+		   </if>
+		   <choose>
+		   	<when test='sort.equals("D")'>
+		   		ORDER BY x1.amount DESC
+		   	</when>
+		   	<otherwise>
+		   		ORDER BY x1.amount ASC
+		   	</otherwise>
+		   	</choose>
+		 LIMIT #{length} OFFSET #{offset}
+	</select>
+	
+	<select id="selectCommonCodeList" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.MSZ920VO">
+		SELECT cdtype, cd, cdnm FROM msz920tb 
+		 WHERE del_yn = 'N'
+		   AND cdtype = #{cdtype}
+		   <if test='cdlevel != null and !cdlevel.equals("")'>
+		   AND cdlevel = #{cdlevel}
+		   </if>
+	</select>
+	
+	<insert id="insertWICSCode" parameterType="com.mo.mosazing.Model.MSZ920VO">
+		INSERT INTO msz920tb(
+		 	cdtype, 
+		 	parentcd, 
+		 	cd, 
+		 	cdnm, 
+		 	cdlevel,
+		 	reg_dt
+		 )VALUES(
+		 	#{cdtype}, 
+		 	#{parentcd}, 
+		 	#{cd}, 
+		 	#{cdnm}, 
+		 	#{cdlevel}, 
+		 	NOW()
+		 ) ON DUPLICATE KEY UPDATE
+			cdnm = #{cdnm},
+			cdlevel = #{cdlevel},
+			upt_dt = NOW()
+	</insert>
+	
+	<delete id="deleteVolumeStatus" parameterType="java.util.List">
+		DELETE FROM MSZ930TB
+		 WHERE CODE IN
+		 <foreach collection="list" item="item" separator=" , " open="(" close=")">
+		 #{item}
+		 </foreach>
+	</delete>
+	<insert id="insertVolumeStatus" parameterType="java.util.List">
+		INSERT INTO msz930tb(
+		 	CODE, 
+		 	vstatus,
+		 	reg_dt
+		 )VALUES
+		 <foreach collection="list" item="item" separator=" , ">
+		 (
+			#{item.code},
+			#{item.vstatus},
+			now()
+		 )
+		 </foreach>
+	</insert>
+	<insert id="copyCorpInfoToTemp" parameterType="com.mo.mosazing.Model.MSZ010VO">
+		INSERT INTO msz019tb
+		(
+			code,
+			dartcd,
+		 	compnm,
+		 	type,
+		 	typenm,
+		 	share,
+		 	capital,
+		 	parvalue,
+		 	currency,
+		 	tel,
+		 	address,
+		 	status,
+		 	division,
+		 	wics,
+		 	reg_dt
+		)
+		SELECT code,
+			dartcd,
+		 	compnm,
+		 	type,
+		 	typenm,
+		 	share,
+		 	capital,
+		 	parvalue,
+		 	currency,
+		 	tel,
+		 	address,
+		 	status,
+		 	division,
+		 	wics,
+		 	now() as reg_dt
+		  FROM msz010tb
+		 WHERE division = #{division} 
+	</insert>
+	<delete id="deleteCorpInfo" parameterType="com.mo.mosazing.Model.MSZ010VO">
+		DELETE FROM msz010tb
+		 WHERE division = #{division}
+	</delete>
+	<update id="insertCorpInfo" parameterType="java.util.List">
+		INSERT INTO msz010tb(
+		 	code,
+		 	compnm,
+		 	type,
+		 	typenm,
+		 	share,
+		 	capital,
+		 	parvalue,
+		 	currency,
+		 	tel,
+		 	address,
+		 	status,
+		 	division,
+		 	reg_dt
+		 )VALUES
+		 <foreach collection="list" item="item" separator=" , ">
+		 (
+		 	#{item.code},
+		 	#{item.compnm}, 
+		 	#{item.type},
+		 	#{item.typenm},
+		 	#{item.share},
+		 	#{item.capital},
+		 	#{item.parvalue}, 
+		 	#{item.currency},
+		 	#{item.tel},
+		 	#{item.address},
+		 	'Y',
+		 	#{item.division},
+		 	now()
+		 )
+		 </foreach>
+	</update>
+	<insert id="updateStatus" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		INSERT INTO msz999tb(
+		 	code,
+		 	exclude,
+		 	reg_dt
+		 )VALUES(
+		 	#{code}, 
+		 	#{exclude}, 
+		 	NOW()
+		 ) ON DUPLICATE KEY UPDATE
+			exclude = #{exclude},
+			upt_dt = NOW()
+	</insert>
+	<insert id="updateFavorite" parameterType="com.mo.mosazing.Model.SearchOptionVO">
+		INSERT INTO msz999tb(
+		 	code,
+		 	favorite,
+		 	reg_dt
+		 )VALUES(
+		 	#{code}, 
+		 	#{favorite}, 
+		 	NOW()
+		 ) ON DUPLICATE KEY UPDATE
+			favorite = #{favorite},
+			upt_dt = NOW()
+	</insert>
+	
+	<select id="selectRenewList" resultType="com.mo.mosazing.Model.MSZ010VO">
+		SELECT a.code,
+       		   sise_dt,
+       		   volume_dt,
+       		   compare_dt
+  		  FROM ( SELECT CODE, MAX(reg_dt) AS sise_dt 
+  		  		   FROM msz300tb 
+  		  		  WHERE CODE IN 
+  		  		  <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+			   		#{item.code}
+		       	  </foreach>
+  		  		  GROUP BY CODE ) a
+  		  LEFT JOIN ( SELECT CODE, MAX(reg_dt) AS volume_dt 
+                		FROM msz400tb 
+               		   WHERE CODE IN 
+		               <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+					   		#{item.code}
+				       </foreach>
+		               GROUP BY CODE ) b
+		    ON a.code = b.code
+		  LEFT JOIN ( SELECT CODE, reg_dt AS compare_dt 
+                		FROM msz930tb 
+               		   WHERE CODE IN 
+		               <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+					   		#{item.code}
+				       </foreach>
+				   ) c
+		    ON a.code = c.code
+	</select>
+	
+	<select id="selectYYYYMM" parameterType="com.mo.mosazing.Model.SearchOptionVO" resultType="com.mo.mosazing.Model.YYYYMMVO">
+		CALL pdGetYYYYMM(
+        <foreach collection="list" item="item" index="index" separator=",'|'," open="CONCAT(" close=")">
+        #{item}
+        </foreach>
+        , #{rowCnt})
+	</select>
+</mapper>

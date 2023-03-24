@@ -1,0 +1,256 @@
+@charset "EUC-KR";
+
+.redb{
+	font-weight: bold;
+	color: #EB5757;
+}
+.blueb{
+	font-weight: bold;
+	color: #2F80ED;
+}
+.noneb{
+	font-weight: bold;
+	color: black;
+}
+
+.active{
+	font-weight: bold;
+}
+.table_border{
+	border-collapse: collapse;
+	border: 1px solid black;
+}
+.table_border th{
+	border: 1px solid black;
+}
+.table_border td{
+	border: 1px solid black;
+}
+.ftinput{
+	width: 50px;
+}
+.black_overlay{
+	display: none;
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	z-index:1001;
+	-moz-opacity: 0.8;
+	opacity:.80;
+	filter: alpha(opacity=80);
+}
+.white_content {
+	display: none;
+	position: absolute;
+	top: 25%;
+	left: 25%;
+	width: 50%;
+	height: 50%;
+	padding: 16px;
+	border: 16px solid orange;
+	background-color: white;
+	z-index:1002;
+	overflow: auto;
+}
+.volumeSelected{
+	background-color: #FFFFD7;
+}
+
+.two-step-table{
+	display: flex;
+}
+.leftside{
+	padding-right: 5px;
+}
+
+.renewed{
+	background-color: #B7F0B1;
+}
+
+/* 신규 디자인 */
+nav{
+	height: 100px;
+}
+#searchOption{
+	width: 700px;
+	float: left;
+}
+#mo_kakao_adfit{
+	width: 320px;
+	float: right;
+}
+#data-tables{
+	border-top: 2px solid #E0E0E0;
+	border-bottom: 2px solid #E0E0E0;
+}
+#data-tables .table-row:nth-child(even){
+	background-color: #fafafa;
+}
+.table-row{
+	-ms-display:flexbox;	/* IE 10 */
+	display:-webkit-flex;	/* Safari */
+	display:flex;
+}
+.table-row > div{
+	margin : 0 5px;
+}
+.row{
+ 	-ms-display:flexbox;	/* IE 10 */
+	display:-webkit-flex;	/* Safari */
+	display:flex;
+	justify-content: space-between;
+}
+.left{
+	float:left;
+}
+.right{
+	float:right;
+}
+.horizontal-line{
+	margin: 8px 0;
+	height: 2px;
+	background-color: #E0E0E0;
+}
+
+/* sptxt */
+.sptxt1{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 11px;
+	line-height: 13px;
+	color: #828282;
+}
+.sptxt2{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 16px;
+	color: #333333;
+}
+
+.sptxt3{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 12px;
+	line-height: 14px;
+	color: #333333;
+}
+.sptxt4{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 23px;
+}
+.sptxt5{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 11px;
+	line-height: 13px;
+	color: #828282;
+}
+.sptxt6{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 12px;
+	line-height: 14px;
+	color: #BDBDBD;
+}
+.sptxt7{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 12px;
+	line-height: 14px;
+	color: #333333;
+}
+.sptxt8{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 12px;
+	line-height: 14px;
+	color: #333333;
+}
+.sptxt9{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 11px;
+	line-height: 13px;
+	color: #4F4F4F;
+}
+.info_a{
+	min-width: 200px;
+}
+.info_b{
+	min-width: 200px;
+}
+.info_financial{
+	min-width: 322px;
+}
+.info_financial > table{
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 12px;
+	line-height: 14px;
+	color: #333333;
+}
+.info_financial > table  td{
+	width: 60px;
+}
+.icon{
+	display: inline-block;
+    vertical-align: middle;
+/*     margin-top: -.25em; */
+	margin-top: 0.25em;
+    position: relative;
+    text-indent: -99999px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+}
+.icon-star{
+	background-image:url("../images/star.png");
+	width: 20px;
+	height: 20px;
+}
+.icon-star.checked{
+	background-image:url("../images/star_chk.png");
+}
+.icon-pin{
+	background-image:url("../images/pin.png");
+	width: 20px;
+	height: 20px;
+}
+.icon-pin.checked{
+	background-image:url("../images/pin_chk.png");
+}
+
+/* 수정 2021.02.03 */
+.red{
+	color: #EB5757;
+}
+.blue{
+	color: #2F80ED;
+}
+.none{
+	color: #333333;
+}
+.goodprice{
+	background-color: #FFEB83;
+}
+.bestroe{
+	background-color: #27AE60;
+}
+.goodroe{
+	background-color: #BB6BD9;
+}
